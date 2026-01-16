@@ -289,13 +289,15 @@ const toCanvas = ({x,y,z})=>{
 let rq = 0;
 
 const to2D = ({x,y,z})=>{
+ 
   if(z <= 0) z =0.0001;
-  
-  FOV = 90*2*(rq)*Math.PI/180/(rq*2);
+  FOV = 90*Math.PI/180;
 
 
-
+  a = WIDTH/HEIGHT;
   let f = Math.abs(1/Math.tan(FOV/2));
+
+	
 
   return {x: f*RENDERFACTOR*x/z, y: f*RENDERFACTOR*y/z,z:1};
 }
