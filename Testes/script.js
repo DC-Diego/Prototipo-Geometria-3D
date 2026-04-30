@@ -85,7 +85,7 @@ const scene = {
 
 
 const cube = {
-PIVOT: {x: 0,y: -2, z: 10},
+PIVOT: {x: 0,y: 0, z: 10},
 POINTS: [{x: 1,y: 1, z: -1}, {x: 1,y: -1, z: -1},{x: -1,y: 1, z: -1}, {x: -1,y: -1, z: -1}, {x: 1,y: 1, z: 1}, {x: 1,y: -1, z: 1},{x: -1,y: 1, z: 1}, {x: -1,y: -1, z: 1}, ],
 LINES:[
   [0, 1],[0,2],[3,1],[3,2], [4,5],[4,6],[7,5],[7,6],[0,4],[1,5],[2,6],[3,7]
@@ -440,7 +440,7 @@ function drawOBJECT(obj){
    z: obj.PIVOT.z - PLAYERPOSITION.z
     
   };
-
+/*
   obj.POINTS.forEach(e => {
 
     if(e.z+pivot.z > 0){
@@ -449,7 +449,7 @@ function drawOBJECT(obj){
       z = e.z+pivot.z
       drawPoint(toCanvas(to2D({x,y,z})), '#00ff00');
     }
-  });
+  });*/
 
   obj.LINES.forEach(e => {
     
@@ -482,7 +482,7 @@ const KEYS = {
   'a': false
 }
 
-const PLAYERPOSITION = {x: 0, y: 0,z:0, vx:0,vy:0, vz:0};
+const PLAYERPOSITION = {x:  0, y: 0,z: 0, vx:0,vy:0, vz:0};
 
 function physics(){
 
@@ -490,7 +490,8 @@ function physics(){
   PLAYERPOSITION.vz = (KEYS['w'])?0.1:KEYS['s']?-0.1:0;
 
 
-
+  // cube.PIVOT.x += PLAYERPOSITION.vx;
+  // cube.PIVOT.z += PLAYERPOSITION.vz;
 
 
   PLAYERPOSITION.x += PLAYERPOSITION.vx;
@@ -512,6 +513,8 @@ let vel = 1;
 
 const OBJECTS = [scene, sphere, cube, pyramide, teceract];
 setInterval(() => {
+
+
   // return
   physics();
   context.clearRect(0,0,WIDTH,HEIGHT);
@@ -524,6 +527,9 @@ setInterval(() => {
   t += vel*5;
   if(t> 200 || t < -200) vel*=-1;
 
+
+  rotateObject(cube, [['y',1]])
+  rotateObject(teceract, [['y',1]])
 
   OBJECTS.forEach((obj, i)=>{
 
@@ -561,6 +567,7 @@ window.addEventListener('mousemove', (e)=>{
       obj.PIVOT = rotatePivotByCamera(obj.PIVOT, [['y',-e.movementX/5]]);
 
       rotateObject(obj, [['y',-e.movementX/5]] )
+      
 
 
       // a = rotatePivotByCamera(obj.PIVOT, [['y',e.movementX/5]])

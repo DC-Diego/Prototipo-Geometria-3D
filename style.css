@@ -1,0 +1,149 @@
+*{
+  margin: 0 auto;
+
+}
+
+html, body{    
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: end;
+}
+
+canvas{
+  width: 100%;
+  height: 100%;
+  background-color: #b0b0b0;
+  /* background-color: red; */
+}
+
+
+h1{
+  position: absolute;
+  color: black;
+  font-size: 60px;
+  left: 50%;
+  top: 50%;
+}
+
+
+
+
+
+
+
+.loading{
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  height: 300px;
+  width: 300px;
+  align-items: center;
+  justify-content: center;
+  align-self: anchor-center;
+  justify-self: anchor-center;
+}
+.loading.hidden{
+  display: none;
+
+}
+
+.cube{
+  
+  position: absolute;
+  height: 300px;
+  width: 300px;
+  border: solid 1px black;
+
+}
+
+.front{
+  animation: infinite 1s front_anim linear;
+}
+.back{
+  animation: infinite 1s back_anim linear;
+}
+
+.left{
+  animation: infinite 1s left_anim linear;
+}
+.right{
+  animation: infinite 1s right_anim linear;
+}
+
+.top{
+  animation: infinite 1s top_anim linear;
+}
+.bottom{
+  animation: infinite 1s bottom_anim linear;
+}
+
+
+@keyframes front_anim {
+  0%{
+    transform: perspective(500px) rotateY(0deg) translateZ(150px);
+  }
+  
+  100%{
+    transform: perspective(500px) rotateY(360deg) translateZ(150px);
+  }
+
+}
+
+@keyframes back_anim {
+  0%{
+    transform: perspective(500px) rotateY(0deg) translateZ(-150px);
+  }
+  
+  100%{
+    transform: perspective(500px) rotateY(360deg) translateZ(-150px);
+  }
+
+}
+
+@keyframes left_anim {
+  0%{
+    transform: perspective(500px)  rotateY(0deg) translateX(-150px)  rotateY(90deg);
+  }
+  
+  100%{
+    transform: perspective(500px) rotateY(360deg) translateX(-150px) rotateY(90deg) ;
+  }
+
+}
+
+@keyframes right_anim {
+  0%{
+    transform: perspective(500px)  rotateY(0deg) translateX(150px)  rotateY(90deg);
+
+  }
+  
+  100%{
+    transform: perspective(500px)  rotateY(360deg) translateX(150px)  rotateY(90deg);
+  }
+
+}
+
+@keyframes top_anim {
+  0%{
+    transform: perspective(500px) rotateY(0deg) translateY(-150px) rotateX(90deg);
+  }
+  
+  100%{
+    transform: perspective(500px) rotateY(360deg) translateY(-150px) rotateX(90deg);
+  }
+
+}
+
+@keyframes bottom_anim {
+  0%{
+    transform: perspective(500px) rotateY(0deg) translateY(150px ) rotateX(90deg);
+  }
+  
+  100%{
+    transform: perspective(500px) rotateY(360deg) translateY(150px ) rotateX(90deg);
+  }
+
+}
