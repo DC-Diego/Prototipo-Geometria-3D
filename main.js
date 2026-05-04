@@ -110,6 +110,7 @@ const rotatePoint =( v,rotate)=>{
 
 
 
+let ISO = false;
 
 const project = (u)=>{
   let [x,y,z] = u;
@@ -119,6 +120,13 @@ const project = (u)=>{
   
   x = (x * f / aspect) / z;
   y = (y * f) / z;
+
+  if(ISO){
+    x = x*z/4;
+    y = y*z/4;
+
+  }
+
   const screenX = (x + 1) * WIDTH / 2;
   const screenY = (1 - y) * HEIGHT / 2;
 
@@ -298,6 +306,8 @@ window.addEventListener('mousemove', (e)=>{
 
 window.addEventListener('keydown', (e)=>{
   KEYS[e.key.toLocaleLowerCase()] = true;
+  if(e.key.toLocaleLowerCase()=='y') ISO = !ISO;
+
 })
 window.addEventListener('keyup', (e)=>{
   KEYS[e.key.toLocaleLowerCase()] = false;
