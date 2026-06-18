@@ -1,5 +1,7 @@
 // import { Matrix } from "./Matrix.js";
-
+import { Cube } from "./Classes/Cube.js";
+import { Grid3D } from "./Classes/Grid.js";
+import { Object3D } from "./Classes/Object.js";
 
 
 const cube = {
@@ -29,6 +31,10 @@ const cube = {
   ]
 }
   
+
+
+const cube3D = new Cube("cube");
+cube3D.setPosition([0,0,10]) ;
 
 
 class Camera{
@@ -139,7 +145,7 @@ const point =(v)=>{
   const [x,y,z] = v;
   context.beginPath();
   context.fillStyle = "#000000";
-  context.arc(x, y, 5, 0, 2 * Math.PI)
+  context.arc(x, y, 2, 0, 2 * Math.PI)
   context.fill();
   context.closePath();
 }
@@ -192,10 +198,13 @@ const p = [600,600,10];
 
 
 const transform= (point, obj, camera )=>{
-  let p = rotatePoint(point, obj.ROTATE);
-  p[0] += obj.POSITION[0];
-  p[1] += obj.POSITION[1];
-  p[2] += obj.POSITION[2]; 
+  const pos = obj.getPosition();
+  const scale = obj.getScale();
+  let p = rotatePoint([point[0]*scale[0],point[1]*scale[1],point[2]*scale[2]], obj.getRotation());
+
+  p[0] +=  pos[0];
+  p[1] +=  pos[1];
+  p[2] +=  pos[2]; 
   
   const CT =  camera.getTranslation();
   p[0] -= CT[0];
@@ -210,8 +219,13 @@ const transform= (point, obj, camera )=>{
 }
 
 
-
-const OBJECTS = [cube];
+const grid3D = new Grid3D("grid", 100, 100, 0.5, 0.5);
+grid3D.setScale([0.2,0.2,0.2]);
+// grid3D.setPosition([-25, -5, 0]);
+// grid3D.setRotation([-Math.PI/4, 0,0]);
+// console.log(grid3D);
+// const OBJECTS = [cube3D, grid3D];
+const OBJECTS = [ grid3D];
 
 let deltaTime = 0;
 
@@ -222,43 +236,38 @@ const time = ()=>{
   // showGrid();
   showAim();
 
-  const processedPoints = [];
   OBJECTS.forEach(obj=>{
-    
-    
-    obj.POINTS.forEach(p=>{
-      const point = transform(p, obj, CAMERA); 
-      if(point[2] <= 0) point[2] = 0.0001;
-
-      processedPoints.push( project(point) );
+    const processedPoints = [];
+    // if(obj == grid3D) console.log(grid3D);
+    obj.getAllPoints().forEach(p=>{
+      const pointr = transform(p, obj, CAMERA); 
+      if(pointr[2] <= 0) pointr[2] = 0.0001;
+      // console.log(point)
+      processedPoints.push( project(pointr) );
+      // point(project(pointr))
 
     });
 
     
     
-    obj.FACES.forEach(face=>{
+    obj.getAllFaces().forEach(face=>{
         const n = face.length;
       for(let i = 0; i < n;i++){
         line( processedPoints[face[i]], processedPoints[face[(i+1)%n]]);
-        point(processedPoints[face[i]])
+        // point(processedPoints[face[i]])
       }
     });
   });
 
 
 
-  cube.POSITION[1] = Math.sin(deltaTime/25)*2; 
+  // cube3D.setPosition([0, Math.sin(deltaTime/25)*2,2.75]);  
 
-  // cube.ROTATE[0] += 0.01;
-  cube.ROTATE[1] += 0.01;
-  // cube.ROTATE[2] += 0.01;
-  // CAMERA.setTranslation([0,0,-3])
-  // CAMERA.rotate([0,0.01,0])
-
-  // cube.POSITION[0] = 1.5;
+  // cube3D.rotate([0,0.01,0]);// += 0.01;
+  grid3D.rotate([0,0.01,0]);// += 0.01;
   requestAnimationFrame(time);
 }
-cube.POSITION[2] = 2.75;
+cube3D.setPosition([0,0,2.75]);
 
 
 
