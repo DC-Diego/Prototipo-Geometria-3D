@@ -10,6 +10,8 @@ export class Grid3D extends Object3D{
   init(x,y,sx, sy){
     const blackHole = (x,y,dx,dy)=>{
       const r= Math.sqrt( (x-dx)*(x-dx) + (y-dy)*(y-dy)   )
+      // return 1*(Math.random()-0.5)
+      // return y*y/50-x*x/50;
       return -150/(r +0.000001) + Math.sin(r/1)*10*0;
     }
 
@@ -20,9 +22,9 @@ export class Grid3D extends Object3D{
         const uy = (y/2-j)*sy;
 
 
-        console.log(blackHole(sx*i, sy*j, x/2,y/2))
+        // console.log(blackHole(sx*i, sy*j, x/2,y/2))
         // this.createPoint([sx*i, blackHole(sx*i, sy*j, sx*x/2,sy*y/2), sy*j]);
-        this.createPoint([ux, blackHole(ux, uy, 0,0), uy]);
+        this.createPoint([ux, 1, uy]);
       }
     }
     for (let i = 0; i < x-1; i++) {
@@ -30,13 +32,7 @@ export class Grid3D extends Object3D{
         this.createFace([i+j*y, i+1+j*y, i+1+(j+1)*y, i+(j+1)*y]);
       }
     }
-    
-
-
-
-
   }
-
 
 
 
