@@ -36,9 +36,6 @@ const cube = {
   
 
 
-const cube3D = new Cube("cube");
-cube3D.setPosition([0,0,10]) ;
-
 
 class Camera{
   #translate = [0,0,0];
@@ -220,29 +217,36 @@ const transform= (point, obj, camera )=>{
 }
 
 
+
+const cube3D = new Cube("cube");
+cube3D.setPosition([-5,0,5]) ;
+
 const grid3D = new Grid3D("grid", 100, 100, 0.5, 0.5);
 grid3D.setScale([0.2,0.2,0.2]);
 
 const sphere1 = new UV_Sphere3D("sphere", 8, 4*8, 8*4);
-sphere1.setPosition([0,0,10]);
+sphere1.setPosition([-5,3,30]);
 sphere1.rotate([0,0,0.4059635840138811])
 
-const cylinder1 = new Cylinder3D("Cylinder", 8, 32, 2*8);
-cylinder1.setPosition([0,-1,18]);
+const cylinder1 = new Cylinder3D("Cylinder", 3, 32, 8);
+cylinder1.setPosition([6,5,16]);
 
 
 
-
-
-const blackHole = (x,y,dx,dy, scale)=>{
-  const r= Math.sqrt( (x-dx)*(x-dx) + (y-dy)*(y-dy)   )
-  return -scale/(r +0.000001) ;
+function smoothstep(min, max, x) {
+  x = Math.max(0, Math.min(1, (x - min) / (max - min)));
+  return x * x * (3 - 2 * x);
 }
+
+const blackHole = (x,y,dx,dy, scale, maxRadius, time=0)=>{
+  if(time < 0) return 0;
+  const r = (x-dx)*(x-dx) + (y-dy)*(y-dy)
+  return -scale/( r ) *smoothstep(1, maxRadius, time)*Math.log(time);
+}
+
+
 const waves = (x,y,dx, dy, scale, smooth, time=0, innerWaves, max = 100)=>{
   const r= Math.sqrt( (x-dx)*(x-dx) + (y-dy)*(y-dy)   );
-  // console.log(scale,r,time, maxRadius)
-  // console.log(scale* r*((time%max/max)))
-  // return Math.sin(r/smooth+(innerWaves?1:-1)*time )*scale* r*((time%max/max));
   return Math.sin(r/smooth+(innerWaves?-1:1)*time )*scale* ( Math.pow(Math.E, -r/time*max)  );
   
 }
@@ -251,19 +255,29 @@ const saddle = (x,y, s)=>{
 }
 
 
-//waves(x,z,0, 0, -0.2, 0.2, t*200)
 const fx = (x,y,z, t=0)=>{  return x; }
-// const fy = (x,y,z, t=0)=>{  return waves(x,z,0, 0, 0.2, 0.2, t*200, true, 10); } 
-const fy = (x,y,z, t=0)=>{  return waves(x,z,0, 0, 0.2, 0.2, t*200, true, 10); } // waves(x,z,0, 0, 10, 10, t) //  waves(x,z,0, 0, 1, 0.2, t, 10)
-const fz = (x,y,z, t=0)=>{  return z; } // blackHole(x,z,0,0, 150)
+// const fy = (x,y,z, t=0)=>{waves(x,z,0, 0, 0.4, 0.2, t*500, false, 10) } 
+
+
+// WATER: waves(x,z,0, 0, 0.2, 0.2, t*300, true, 10)
+// BLACK HOLE PULSE: waves(x,z,0, 0, 0.4, 0.2, t*500, false, 10)
+
+// BLACK HOLE: blackHole(x,z,0,0, 12, 10, t*200-50)
+
+const fy = (x,y,z, t=0)=>{ 
+  return waves(x,z,0, 0, 0.2, 0.2, t*300, true, 10)
+  
+  } // waves(x,z,0, 0, 10, 10, t) //  waves(x,z,0, 0, 1, 0.2, t, 10)
+
+const fz = (x,y,z, t=0)=>{  return z } // blackHole(x,z,0,0, 150)
 
 
 const dynaGrid = new DynamicGrid("dynamicGrid", 100, 0.25,0.25, fx, fy, fz);
 dynaGrid.setPosition([0,-5,15])
-// const OBJECTS = [cube3D, grid3D, sphere1];
 
 const IS_DEBUG_MODE = 0*true;
-const OBJECTS = [dynaGrid];
+const OBJECTS = [cube3D, dynaGrid, sphere1, cylinder1];
+// const OBJECTS = [dynaGrid];
 
 let deltaTime = 0;
 
@@ -299,12 +313,12 @@ const time = ()=>{
 
   sphere1.rotate([0, 0.01, 0]);
   // cube3D.setPosition([0, Math.sin(deltaTime/25)*2,2.75]);  
-
   // cube3D.rotate([0,0.01,0]);// += 0.01;
+
   grid3D.rotate([0,0.01,0]);// += 0.01;
-  // requestAnimationFrame(time);
+  requestAnimationFrame(time);
 }
-cube3D.setPosition([0,0,2.75]);
+// cube3D.setPosition([0,0,2.75]);
 
 
 
@@ -375,7 +389,7 @@ const physics = () => {
 
 document.querySelector(".loading").classList.add("hidden");
 
-setInterval(()=>{
+// setInterval(()=>{
   time();
 
-}, 1000/60)
+// }, 1000/60)
