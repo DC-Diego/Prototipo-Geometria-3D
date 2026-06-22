@@ -1,4 +1,5 @@
-// import { Matrix } from "./Matrix.js";
+// import { Matrix } from "./Classes/Matrix.js";
+import { Camera } from "./Classes/CameraFPS.js";
 import { Cube } from "./Classes/Cube.js";
 import { Cylinder3D } from "./Classes/Cylinder.js";
 import { DynamicGrid } from "./Classes/DynamicGrid.js";
@@ -37,35 +38,9 @@ const cube = {
 
 
 
-class Camera{
-  #translate = [0,0,0];
-  #rotate = [0,0,0];
-
-  setRotation(rotation){
-    this.#rotate = rotation;
-  }
-  getRotation(){ return this.#rotate}
-
-  rotate(rotate){
-    this.#rotate[0] += rotate[0];
-    this.#rotate[1] += rotate[1];
-    this.#rotate[2] += rotate[2];
-  }
-
-  setTranslation(translate){
-    this.#translate= translate;
-  }
-  getTranslation(){ return this.#translate}
-
-  translate(translate){
-    this.#translate[0] += translate[0];
-    this.#translate[1] += translate[1];
-    this.#translate[2] += translate[2];
-  }
-
-}
 
 const CAMERA = new Camera();
+CAMERA.setTranslation([0,0,-15])
 
 const canvas = document.getElementById("canvas");
 const context = canvas.getContext("2d");
@@ -128,8 +103,8 @@ const project = (u)=>{
   y = (y * f) / z;
 
   if(ISO){
-    x = x*z/4;
-    y = y*z/4;
+    x = x*z/15;
+    y = y*z/15;
 
   }
 
@@ -177,11 +152,11 @@ const showGrid = ()=>{
 
 const showAim = ()=>{
   context.beginPath();
-  context.moveTo(WIDTH/2-50,HEIGHT/2);
-  context.lineTo(WIDTH/2+50,HEIGHT/2);
-  context.moveTo(WIDTH/2,HEIGHT/2-50);
-  context.lineTo(WIDTH/2,HEIGHT/2+50);
-  context.strokeStyle="#000000";
+  context.moveTo(WIDTH/2-15,HEIGHT/2);
+  context.lineTo(WIDTH/2+15,HEIGHT/2);
+  context.moveTo(WIDTH/2,HEIGHT/2-15);
+  context.lineTo(WIDTH/2,HEIGHT/2+15);
+  context.strokeStyle="#ff0000";
   context.stroke();
   context.closePath();
 }
@@ -219,17 +194,27 @@ const transform= (point, obj, camera )=>{
 
 
 const cube3D = new Cube("cube");
-cube3D.setPosition([-5,0,5]) ;
+// cube3D.setPosition([0,0,25]) ;
+cube3D.setScale([2.5,2.5,2.5])
 
-const grid3D = new Grid3D("grid", 100, 100, 0.5, 0.5);
-grid3D.setScale([0.2,0.2,0.2]);
+const cube3D2 = new Cube("cube");
+cube3D2.setPosition([30,0,10]) ;
+cube3D2.setScale([2.5,2.5,5.5])
+
+
+const grid3D = new Grid3D("grid", 50, 50, 1.5, 1.5);
+grid3D.setPosition([0,-20,0])
+// grid3D.setScale([0.2,0.2,0.2]);
 
 const sphere1 = new UV_Sphere3D("sphere", 8, 4*8, 8*4);
-sphere1.setPosition([-5,3,30]);
-sphere1.rotate([0,0,0.4059635840138811])
+sphere1.setPosition([20,0,25]);
+sphere1.rotate([0,0,-0.4059635840138811])
 
-const cylinder1 = new Cylinder3D("Cylinder", 3, 32, 8);
-cylinder1.setPosition([6,5,16]);
+const cylinder1 = new Cylinder3D("Cylinder", 5, 8, 14);
+cylinder1.setPosition([30.1,3,-16]);
+
+const cylinder2 = new Cylinder3D("Cylinder", 6, 32, 16);
+cylinder2.setPosition([-18,0,25]);
 
 
 
@@ -253,6 +238,9 @@ const waves = (x,y,dx, dy, scale, smooth, time=0, innerWaves, max = 100)=>{
 const saddle = (x,y, s)=>{
   return y*y/s-x*x/s;
 }
+const mountain_chains = (x,y,z, t=0)=>{
+  return Math.cos(x)-Math.sin(z);
+}
 
 
 const fx = (x,y,z, t=0)=>{  return x; }
@@ -272,11 +260,57 @@ const fy = (x,y,z, t=0)=>{
 const fz = (x,y,z, t=0)=>{  return z } // blackHole(x,z,0,0, 150)
 
 
+
+
 const dynaGrid = new DynamicGrid("dynamicGrid", 100, 0.25,0.25, fx, fy, fz);
 dynaGrid.setPosition([0,-5,15])
 
 const IS_DEBUG_MODE = 0*true;
-const OBJECTS = [cube3D, dynaGrid, sphere1, cylinder1];
+// cube3D.setPosition([0,0,15])
+// const OBJECTS = [cube3D,  grid3D];
+
+const AXIS = new Object3D("AXIS");
+AXIS.createPoint([0,0,0]);
+AXIS.createPoint([1.8,0,0]);
+AXIS.createPoint([0,1.8,0]);
+AXIS.createPoint([0,0,1.8]);
+
+AXIS.createPoint([1,-1,2]);
+AXIS.createPoint([-1,-1,2]);
+AXIS.createPoint([1,1,2]);
+AXIS.createPoint([-1,1,2]);
+
+AXIS.createFace([4,5,6,7,6,5,4]);
+
+
+AXIS.createPoint([2,1,1]);
+AXIS.createPoint([2,-1,-1]);
+AXIS.createPoint([2,1,-1]);
+AXIS.createPoint([2,-1,1]);
+
+AXIS.createFace([8,9]);
+AXIS.createFace([10,11]);
+
+AXIS.createPoint([0,2,0]);
+AXIS.createPoint([0,3,0]);
+AXIS.createPoint([0.25,4,0.25]);
+AXIS.createPoint([-0.25,4,-0.25]);
+
+AXIS.createFace([12,13,14,13,15,13]);
+
+
+
+AXIS.createFace([0,1]);
+AXIS.createFace([0,2]);
+AXIS.createFace([0,3]);
+
+AXIS.setScale([0.3,0.3,0.3])
+// cube3D
+
+// const OBJECTS = [AXIS, cube3D];
+
+const OBJECTS = [AXIS, cube3D,  grid3D, sphere1, cylinder2];
+// const OBJECTS = [AXIS,  cube3D, dynaGrid, sphere1, cylinder1];
 // const OBJECTS = [dynaGrid];
 
 let deltaTime = 0;
@@ -286,7 +320,7 @@ const time = ()=>{
   deltaTime++;
   clearCanvas()
   // showGrid();
-  // showAim();
+  
 
   OBJECTS.forEach(obj=>{
     const processedPoints = [];
@@ -313,9 +347,12 @@ const time = ()=>{
 
   sphere1.rotate([0, 0.01, 0]);
   // cube3D.setPosition([0, Math.sin(deltaTime/25)*2,2.75]);  
-  // cube3D.rotate([0,0.01,0]);// += 0.01;
+  // cube3D2.rotate([0,0.01,0]);// += 0.01;
+  // cylinder1.rotate([0.005,0.01,0.001])
+  cylinder2.setScale([1, (Math.sin(deltaTime/30)/2+1),1]);
 
-  grid3D.rotate([0,0.01,0]);// += 0.01;
+  showAim();
+  // grid3D.rotate([0,0.01,0]);// += 0.01;
   requestAnimationFrame(time);
 }
 // cube3D.setPosition([0,0,2.75]);
@@ -348,18 +385,19 @@ window.addEventListener('mouseup', ()=>{
 
 })
 
+
 window.addEventListener('mousemove', (e)=>{
   if(document.pointerLockElement){
-      const pitchDelta = e.movementY * Math.PI / 180;
-      const yawDelta = e.movementX * Math.PI / 180;
+    const pitchDelta = e.movementY * Math.PI / 180;
+    const yawDelta = e.movementX * Math.PI / 180;
+    
+    const rot = CAMERA.getRotation();
+    
+    const limit = Math.PI / 2 - 0.01;
+    const a = Math.max(-limit, Math.min(limit, rot[0]+pitchDelta));
   
-      const rot = CAMERA.getRotation();
-
-
-      const limit = Math.PI / 2 - 0.01;
-      const a = Math.max(-limit, Math.min(limit, rot[0]+pitchDelta));
-  
-      CAMERA.setRotation([a, rot[1]+yawDelta, rot[2]]);
+    const newRot = [a, rot[1]+yawDelta, rot[2]];
+    CAMERA.setRotation(newRot);
   }
 });
 
@@ -367,23 +405,30 @@ window.addEventListener('mousemove', (e)=>{
 window.addEventListener('keydown', (e)=>{
   KEYS[e.key.toLocaleLowerCase()] = true;
   if(e.key.toLocaleLowerCase()=='y') ISO = !ISO;
-
+  
 })
 window.addEventListener('keyup', (e)=>{
   KEYS[e.key.toLocaleLowerCase()] = false;
 })
+
+const vel = 1.2;
 const physics = () => {
-  const vx = KEYS['a'] ? -0.1 : KEYS['d'] ? 0.1 : 0;
-  const vy = KEYS['q'] ? -0.1 : KEYS['e'] ? 0.1 : 0;
-  const vz = KEYS['w'] ? 0.1 : KEYS['s'] ? -0.1 : 0;
+  const vx = vel*(KEYS['a'] ? -0.1 : KEYS['d'] ? 0.1 : 0);
+  const vy = vel*(KEYS['q'] ? -0.1 : KEYS['e'] ? 0.1 : 0);
+  const vz = vel*(KEYS['w'] ? 0.1 : KEYS['s'] ? -0.1 : 0);
 
   const rot = CAMERA.getRotation();
+  let vx_l = rotateY([vx,0,0], rot[1]);
+  let vz_l = rotateY(rotateX([0,0,vz], rot[0]), rot[1]);
 
-  if(vy) CAMERA.translate([0, vy, 0]);
-  else{
-    const move = rotatePoint([vx, 0, vz], [rot[0], rot[1], 0]);
-    CAMERA.translate(move);
-  }
+
+  const move = [
+    vx_l[0]+vz_l[0],
+    vx_l[1]+vz_l[1]+vy,
+    vx_l[2]+vz_l[2],
+  ];
+  CAMERA.translate(move);
+
 }
 
 
