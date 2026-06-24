@@ -1,4 +1,5 @@
 // import { Matrix } from "./Classes/Matrix.js";
+import { Axis } from "./Classes/Axis.js";
 import { Camera } from "./Classes/CameraFPS.js";
 import { Cube } from "./Classes/Cube.js";
 import { Cylinder3D } from "./Classes/Cylinder.js";
@@ -253,7 +254,7 @@ const fx = (x,y,z, t=0)=>{  return x; }
 // BLACK HOLE: blackHole(x,z,0,0, 12, 10, t*200-50)
 
 const fy = (x,y,z, t=0)=>{ 
-  return waves(x,z,0, 0, 0.2, 0.2, t*300, true, 10)
+  return waves(x,z,0, 0, 0.2, 0.2, t*300, true, 10);
   
   } // waves(x,z,0, 0, 10, 10, t) //  waves(x,z,0, 0, 1, 0.2, t, 10)
 
@@ -262,58 +263,50 @@ const fz = (x,y,z, t=0)=>{  return z } // blackHole(x,z,0,0, 150)
 
 
 
-const dynaGrid = new DynamicGrid("dynamicGrid", 100, 0.25,0.25, fx, fy, fz);
+const dynaGrid = new DynamicGrid("dynamicGrid", 100, 0.5,0.5, fx, fy, fz);
 dynaGrid.setPosition([0,-5,15])
 
 const IS_DEBUG_MODE = 0*true;
-// cube3D.setPosition([0,0,15])
-// const OBJECTS = [cube3D,  grid3D];
 
-const AXIS = new Object3D("AXIS");
-AXIS.createPoint([0,0,0]);
-AXIS.createPoint([1.8,0,0]);
-AXIS.createPoint([0,1.8,0]);
-AXIS.createPoint([0,0,1.8]);
-
-AXIS.createPoint([1,-1,2]);
-AXIS.createPoint([-1,-1,2]);
-AXIS.createPoint([1,1,2]);
-AXIS.createPoint([-1,1,2]);
-
-AXIS.createFace([4,5,6,7,6,5,4]);
-
-
-AXIS.createPoint([2,1,1]);
-AXIS.createPoint([2,-1,-1]);
-AXIS.createPoint([2,1,-1]);
-AXIS.createPoint([2,-1,1]);
-
-AXIS.createFace([8,9]);
-AXIS.createFace([10,11]);
-
-AXIS.createPoint([0,2,0]);
-AXIS.createPoint([0,3,0]);
-AXIS.createPoint([0.25,4,0.25]);
-AXIS.createPoint([-0.25,4,-0.25]);
-
-AXIS.createFace([12,13,14,13,15,13]);
-
-
-
-AXIS.createFace([0,1]);
-AXIS.createFace([0,2]);
-AXIS.createFace([0,3]);
+const AXIS = new Axis("AXIS");
 
 AXIS.setScale([0.3,0.3,0.3])
-// cube3D
 
 // const OBJECTS = [AXIS, cube3D];
 
-const OBJECTS = [AXIS, cube3D,  grid3D, sphere1, cylinder2];
+// const OBJECTS = [cube3D, AXIS,  grid3D, sphere1, cylinder2];
 // const OBJECTS = [AXIS,  cube3D, dynaGrid, sphere1, cylinder1];
-// const OBJECTS = [dynaGrid];
+const OBJECTS = [dynaGrid];
 
 let deltaTime = 0;
+
+
+const module = (v)=>{
+  return Math.sqrt(v[0]*v[0]+v[1]*v[1]+v[2]*v[2]);
+
+}
+
+const getDistanceFromCamera=(p)=>{
+  const cam = CAMERA.getTranslation();
+  return module([p[0]-cam[0], p[1]-cam[1], p[2]-cam[2] ]);
+
+}
+const drawFace = (face, ref,c)=>{
+  const [x1,y1] = ref[face[0]];
+  context.beginPath();
+  context.moveTo(x1,y1);
+  const n = face.length;
+  for(let i = 1; i < n;i++){
+    const [x2,y2] = ref[face[(i)%n]];
+    context.lineTo(x2,y2);
+  }
+  context.fillStyle = c;
+  context.fill();
+  context.closePath();
+
+}
+
+const colors = ["#000000","#111111","#222222","#333333","#444444","#555555","#666666","#777777","#888888","#999999","#aaaaaa","#bbbbbb","#cccccc","#dddddd","#eeeeee","#ffffff" ]
 
 const time = ()=>{
   physics();
@@ -322,7 +315,8 @@ const time = ()=>{
   // showGrid();
   
 
-  OBJECTS.forEach(obj=>{
+  OBJECTS.sort((b, a) => getDistanceFromCamera(a.getPosition()) - getDistanceFromCamera(b.getPosition()) ).forEach((obj, k)=>{
+    // console.log(obj, k)
     const processedPoints = [];
     // if(obj == grid3D) console.log(grid3D);
     obj.getAllPoints(deltaTime/1000).forEach(p=>{
@@ -335,8 +329,13 @@ const time = ()=>{
 
     
     
-    obj.getAllFaces().forEach(face=>{
-        const n = face.length;
+    const m = Math.sqrt(obj.getAllFaces().length);
+    obj.getAllFaces().forEach((face,i)=>{
+      const n = face.length;
+      const x = i%m-m/2;
+      const y = i/m-m/2;
+      const r = Math.sqrt((x-0)*(x-0)+(y-0)*(y-0));
+      // drawFace(face, processedPoints, colors[Math.floor(r*2)%16]);
       for(let i = 0; i < n;i++){
         line( processedPoints[face[i]], processedPoints[face[(i+1)%n]]);
         // point(processedPoints[face[i]])

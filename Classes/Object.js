@@ -57,7 +57,7 @@ export class Object3D{
     this.#ROTATE[1] = this.#ROTATE[1]+ R[1];
     this.#ROTATE[2] = this.#ROTATE[2]+ R[2];
   }
-
+  getName(){return this.#name}
   getPosition(){
     return this.#POSITION;
   }
