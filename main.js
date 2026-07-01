@@ -243,6 +243,38 @@ const mountain_chains = (x,y,z, t=0)=>{
   return Math.cos(x)-Math.sin(z);
 }
 
+const radialWave = (x,y,s,t=0)=>{
+ 
+  return Math.sin(Math.sqrt(x*x/s+y*y/s)+t);
+  // return Math.sin(Math.sqrt(x*x/s+y*y/s)+t)/Math.sqrt(Math.sqrt(x*x/s+y*y/s));
+
+}
+
+const roughness = (x,y,s)=>{
+  // return Math.sin(10*x)*Math.sin(10*y)
+  // return Math.sin(10*x*y)
+  return x*y/(1+x*x+y*y)
+
+}
+
+const twist = (x,y,s)=>{
+  return x*Math.sin(y/s)*s
+
+}
+const terrain = (x,y,s, t=0)=>{
+  return Math.sin(x+t)*Math.cos(y+t);
+  return Math.sqrt(0.8*Math.sin(x)+0.5*Math.cos(2*y)+0.3*Math.sin(4*x+y)+0.2*Math.cos(5*y-2*x)+2)
+
+}
+
+const crater = (x,y,s)=>{
+  return -Math.pow(Math.E, -(x*x+y*y)/s/s)*s/2;
+
+}
+const ramp = (x,y, s)=>{
+  return Math.abs(x);
+
+}
 
 const fx = (x,y,z, t=0)=>{  return x; }
 // const fy = (x,y,z, t=0)=>{waves(x,z,0, 0, 0.4, 0.2, t*500, false, 10) } 
@@ -254,7 +286,10 @@ const fx = (x,y,z, t=0)=>{  return x; }
 // BLACK HOLE: blackHole(x,z,0,0, 12, 10, t*200-50)
 
 const fy = (x,y,z, t=0)=>{ 
-  return waves(x,z,0, 0, 0.2, 0.2, t*300, true, 10);
+  // return waves(x,z,0, 0, 0.2, 0.2, t*300, true, 10);
+  return radialWave(x,z,5, -t*60);
+  // return terrain(x,z,5, -t*60);
+  // return crater(x,z,5, -t*60);
   
   } // waves(x,z,0, 0, 10, 10, t) //  waves(x,z,0, 0, 1, 0.2, t, 10)
 
@@ -276,7 +311,7 @@ AXIS.setScale([0.3,0.3,0.3])
 
 // const OBJECTS = [cube3D, AXIS,  grid3D, sphere1, cylinder2];
 // const OBJECTS = [AXIS,  cube3D, dynaGrid, sphere1, cylinder1];
-const OBJECTS = [dynaGrid];
+const OBJECTS = [dynaGrid, AXIS];
 
 let deltaTime = 0;
 
@@ -329,12 +364,12 @@ const time = ()=>{
 
     
     
-    const m = Math.sqrt(obj.getAllFaces().length);
+    // const m = Math.sqrt(obj.getAllFaces().length);
     obj.getAllFaces().forEach((face,i)=>{
       const n = face.length;
-      const x = i%m-m/2;
-      const y = i/m-m/2;
-      const r = Math.sqrt((x-0)*(x-0)+(y-0)*(y-0));
+      // const x = i%m-m/2;
+      // const y = i/m-m/2;
+      // const r = Math.sqrt((x-0)*(x-0)+(y-0)*(y-0));
       // drawFace(face, processedPoints, colors[Math.floor(r*2)%16]);
       for(let i = 0; i < n;i++){
         line( processedPoints[face[i]], processedPoints[face[(i+1)%n]]);
