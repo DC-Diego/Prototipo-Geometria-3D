@@ -134,7 +134,7 @@ const line = (v1,v2)=>{
   context.beginPath();
   context.moveTo(x1,y1);
   context.lineTo(x2,y2);
-  context.strokeStyle="#000000";
+  context.strokeStyle="#00000080";
   context.stroke();
   context.closePath();
 }
@@ -262,9 +262,28 @@ const twist = (x,y,s)=>{
 
 }
 const terrain = (x,y,s, t=0)=>{
-  return Math.sin(x+t)*Math.cos(y+t);
-  return Math.sqrt(0.8*Math.sin(x)+0.5*Math.cos(2*y)+0.3*Math.sin(4*x+y)+0.2*Math.cos(5*y-2*x)+2)
+  // return s*(Math.sin(x+t)*Math.cos(y+t));
+  // return Math.sqrt(0.8*Math.sin(x)+0.5*Math.cos(2*y)+0.3*Math.sin(4*x+y)+0.2*Math.cos(5*y-2*x)+2)
+  x *= 0.12;
+  let z =y* 0.12;
 
+  return s * (
+      0.60 * Math.sin(x + t) * Math.cos(z + t) +
+      0.25 * Math.sin(2.3 * x - 1.7 * z) +
+      0.15 * Math.cos(4.5 * z + 2.2 * x)
+  );
+}
+
+const minecraftTerrain = (x,y,s,t=0)=>{
+  x *= 0.1; 
+  let z =y* 0.1;
+
+  let h =
+      Math.sin(x+10) +
+      0.5 * Math.sin(2 * x + z) +
+      0.25 * Math.cos(4 * z);
+
+  return Math.floor(h * s);
 }
 
 const crater = (x,y,s)=>{
@@ -285,12 +304,19 @@ const fx = (x,y,z, t=0)=>{  return x; }
 
 // BLACK HOLE: blackHole(x,z,0,0, 12, 10, t*200-50)
 
+// return waves(x,z,0, 0, 0.2, 0.2, t*300, true, 10);
+// return crater(x,z,5, -t*60);
+// return waves(x,z,0, 0, 0.4, 0.6, t*500, true, 10);
+// return mountain_chains(x, y, z,0)
+
 const fy = (x,y,z, t=0)=>{ 
-  // return waves(x,z,0, 0, 0.2, 0.2, t*300, true, 10);
-  return radialWave(x,z,5, -t*60);
-  // return terrain(x,z,5, -t*60);
-  // return crater(x,z,5, -t*60);
-  
+  // return radialWave(x,z,5, -t*60) ;
+  // return waves(x,z,0, 0, 0.6, 0.53, t*500, false, 10)+blackHole(x,z,0,0, 120, 10, t*200-50);
+  // return terrain(x,z,1, -t*60*0);
+  // return minecraftTerrain(x,z,1, -t*60*0);
+  return saddle(z,x,12.5)
+
+
   } // waves(x,z,0, 0, 10, 10, t) //  waves(x,z,0, 0, 1, 0.2, t, 10)
 
 const fz = (x,y,z, t=0)=>{  return z } // blackHole(x,z,0,0, 150)
@@ -298,7 +324,7 @@ const fz = (x,y,z, t=0)=>{  return z } // blackHole(x,z,0,0, 150)
 
 
 
-const dynaGrid = new DynamicGrid("dynamicGrid", 100, 0.5,0.5, fx, fy, fz);
+const dynaGrid = new DynamicGrid("dynamicGrid", 100/2, 0.5,0.5, fx, fy, fz);
 dynaGrid.setPosition([0,-5,15])
 
 const IS_DEBUG_MODE = 0*true;
@@ -311,7 +337,8 @@ AXIS.setScale([0.3,0.3,0.3])
 
 // const OBJECTS = [cube3D, AXIS,  grid3D, sphere1, cylinder2];
 // const OBJECTS = [AXIS,  cube3D, dynaGrid, sphere1, cylinder1];
-const OBJECTS = [dynaGrid, AXIS];
+// const OBJECTS = [dynaGrid, AXIS];
+const OBJECTS = [dynaGrid];
 
 let deltaTime = 0;
 
@@ -350,7 +377,8 @@ const time = ()=>{
   // showGrid();
   
 
-  OBJECTS.sort((b, a) => getDistanceFromCamera(a.getPosition()) - getDistanceFromCamera(b.getPosition()) ).forEach((obj, k)=>{
+  // OBJECTS.sort((b, a) => getDistanceFromCamera(a.getPosition()) - getDistanceFromCamera(b.getPosition()) ).forEach((obj, k)=>{
+  OBJECTS.forEach((obj, k)=>{
     // console.log(obj, k)
     const processedPoints = [];
     // if(obj == grid3D) console.log(grid3D);
@@ -379,11 +407,11 @@ const time = ()=>{
   });
 
 
-  sphere1.rotate([0, 0.01, 0]);
+  // sphere1.rotate([0, 0.01, 0]);
   // cube3D.setPosition([0, Math.sin(deltaTime/25)*2,2.75]);  
   // cube3D2.rotate([0,0.01,0]);// += 0.01;
   // cylinder1.rotate([0.005,0.01,0.001])
-  cylinder2.setScale([1, (Math.sin(deltaTime/30)/2+1),1]);
+  // cylinder2.setScale([1, (Math.sin(deltaTime/30)/2+1),1]);
 
   showAim();
   // grid3D.rotate([0,0.01,0]);// += 0.01;
